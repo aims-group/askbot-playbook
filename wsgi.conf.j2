@@ -1,0 +1,15 @@
+# Possible values include: debug, info, notice, warn, error, crit,
+# alert, emerg.
+LogLevel warn
+
+ErrorLog {{ log_dir }}/{{ app_name }}_error.log
+CustomLog {{ log_dir }}/{{ app_name }}.log combined
+Alias /{{ app_name }}/static {{ app_dir }}/static
+    
+<Directory {{ app_dir }}/static>
+  Order allow,deny
+  Allow from all
+</Directory>
+    
+WSGIScriptAlias /{{ app_name }} {{ app_wsgi_path }}
+

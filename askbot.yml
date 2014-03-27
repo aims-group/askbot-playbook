@@ -1,5 +1,7 @@
 ---
 
+#!TODO: collectstatic and fix settings to point the right place
+
 # Do VM boostrapping 
 - include: common.yml
 
@@ -22,32 +24,39 @@
   - name: install gcc, required for askbot dependencies
     yum: name=gcc
   - name: install psycopg2 into askbot virtualenv
-    pip: name=psycopg2 virtualenv=/var/www/askbot
+    pip: name=psycopg2 virtualenv={{ app_venv }}
     environment: proxy_env
 
   # For some reason this dependency needs to be installed first
   - name: install askbot prerequisite setuptools-hg into virtualenv
-    pip: name=setuptools-hg  virtualenv=/var/www/askbot
+    pip: name=setuptools-hg  virtualenv={{ app_venv }}
     environment: proxy_env
 
   - name: install askbot into virtualenv
-    pip: name=askbot virtualenv=/var/www/askbot
+    pip: name=askbot virtualenv={{ app_venv }}
     environment: proxy_env
 
   - name: run askbot-setup to create the webapp
-    command: /var/www/askbot/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name=/var/www/askbot/app creates=/var/www/askbot/app/settings.py
+    command: "{{ app_venv }}/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name={{ app_dir }} creates={{ app_dir }}/settings.py"
 
   #!NOTE: The colon-character variable substitution is needed to work round a bug in the parser
   - name: patch settings.py to use a network socket for DB
-    lineinfile: dest=/var/www/askbot/app/settings.py
+    lineinfile: dest={{ app_dir }}/settings.py
       regexp="^(\s+)'HOST'{{':'}} '',(.*)" 
       line="\1'HOST'{{':'}} 'localhost',\2"
       backrefs=yes
       state=present
 
   - name: syncdb askbot
-    command: /var/www/askbot/bin/python manage.py syncdb --noinput
-      chdir=/var/www/askbot/app
+    command: "{{ app_venv }}/bin/python manage.py syncdb --noinput
+      chdir={{ app_dir }}"
   - name: migrate askbot
-    shell: /var/www/askbot/bin/python manage.py migrate --noinput || true
-      chdir=/var/www/askbot/app
+    shell: "{{ app_venv }}/bin/python manage.py migrate --noinput || true
+      chdir={{ app_dir }}"
+
+  - name: make the app owned by apache
+    file: dest={{ app_dir }} owner=apache recurse=yes state=directory
+
+# Install Apache and mod_wsgi
+- include: wsgi.yml
+

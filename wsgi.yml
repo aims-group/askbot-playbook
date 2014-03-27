@@ -1,0 +1,38 @@
+---
+- hosts: all
+  remote_user: root
+  name: Install apache and mod_wsgi
+  tasks:
+    - name: install apache2
+      yum: name=httpd
+    
+    - name: install mod-wsgi
+      yum: name=mod_wsgi
+  
+    - name: start httpd
+      service: name=httpd state=started
+
+- hosts: all
+  remote_user: root
+  name: install askbot mog_wsgi configuration
+
+  vars:
+    app_wsgi_path: "{{ app_dir }}/wsgi.py"
+    app_wsgi_conf_path: /etc/httpd/conf.d/{{ app_name }}.conf
+
+  tasks:
+    - name: install wsgi.py
+      template: src=wsgi.py.j2 dest={{ app_wsgi_path }} owner=apache mode=0744
+      notify: restart httpd
+  
+    - name: install apache wsgi.conf
+      template: src=wsgi.conf.j2 dest={{ app_wsgi_conf_path }}
+      notify: restart httpd
+    
+    - name: create logdir
+      file: dest={{ log_dir }} owner=apache
+      notify: restart httpd
+
+  handlers:
+    - name: restart httpd
+      service: name=httpd state=restarted

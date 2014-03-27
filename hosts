@@ -8,5 +8,12 @@ dbuser = askbot
 dbpassword = mysupersecretpassword
 
 [askbot]
-130.246.139.248:23 vm_type=jasmin_unmanaged
+130.246.139.248:23 
 
+[askbot:vars]
+vm_type=jasmin_unmanaged
+app_name = askbot
+app_package = askbot_site
+app_dir = /var/www/askbot/askbot_site
+app_venv = /var/www/askbot
+log_dir = /var/www/askbot/log
