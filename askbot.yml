@@ -20,11 +20,16 @@
   name: ensure postgres packages are installed
   remote_user: root
   tasks:
-  - yum: name=postgresql-server
-  - yum: name=postgresql-devel # required for pg_config
-  - yum: name=python-psycopg2
-  - command: /sbin/service postgresql initdb creates=/var/lib/pgsql/data
-  - service: name=postgresql state=started
+  - name: Install Postgres server
+    yum: name=postgresql-server
+  - name: Install Posgres devel for pg_config
+    yum: name=postgresql-devel # required for pg_config
+  - name: Install psycopg2 for ansible db modules
+    yum: name=python-psycopg2
+  - name: Initialise Posgres
+    command: /sbin/service postgresql initdb creates=/var/lib/pgsql/data
+  - name: Start Postgres
+    service: name=postgresql state=started
 
 - hosts: askbot
   name: ensure askbot user and database are created
@@ -66,7 +71,16 @@
   - name: restart postgresql
     service: name=postgresql state=restarted
 
+#!TODO: Install and configure apache2
+#  tasks:
+#  - name: ensure apache2 is installed
+#    yum: name=httpd
+#
+#  - service: name=httpd state=started
+
+
 - hosts: askbot
+  name: install askbot webapp
   remote_user: root
 
   #!TODO: remove duplicate db config
@@ -79,36 +93,38 @@
       https_proxy: wwwcache.rl.ac.uk:8080
 
   tasks:
-  - name: ensure apache2 is installed
-    yum: name=httpd
-
-  - service: name=httpd state=started
-
   - name: install virtualenv
     yum: name=python-virtualenv
 
+  - name: install gcc, required for askbot dependencies
+    yum: name=gcc
+  - name: install psycopg2 into askbot virtualenv
+    pip: name=psycopg2 virtualenv=/var/www/askbot
+    environment: proxy_env
+
   # For some reason this dependency needs to be installed first
-  - pip: name=setuptools-hg  virtualenv=/var/www/askbot
+  - name: install askbot prerequisite setuptools-hg into virtualenv
+    pip: name=setuptools-hg  virtualenv=/var/www/askbot
     environment: proxy_env
 
-  - pip: name=askbot virtualenv=/var/www/askbot
+  - name: install askbot into virtualenv
+    pip: name=askbot virtualenv=/var/www/askbot
     environment: proxy_env
 
-  - yum: name=gcc
-  - pip: name=psycopg2 virtualenv=/var/www/askbot
-    environment: proxy_env
-
-  - command: /var/www/askbot/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name=/var/www/askbot/app creates=/var/www/askbot/app/settings.py
+  - name: run askbot-setup to create the webapp
+    command: /var/www/askbot/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name=/var/www/askbot/app creates=/var/www/askbot/app/settings.py
 
   #!NOTE: The colon-character variable substitution is needed to work round a bug in the parser
-  - name: Patch settings.py to use a network socket for DB
+  - name: patch settings.py to use a network socket for DB
     lineinfile: dest=/var/www/askbot/app/settings.py
       regexp="^(\s+)'HOST'{{':'}} '',(.*)" 
       line="\1'HOST'{{':'}} 'localhost',\2"
       backrefs=yes
       state=present
 
-  - command: /var/www/askbot/bin/python manage.py syncdb --noinput
+  - name: syncdb askbot
+    command: /var/www/askbot/bin/python manage.py syncdb --noinput
       chdir=/var/www/askbot/app
-  - shell: /var/www/askbot/bin/python manage.py migrate --noinput || true
+  - name: migrate askbot
+    shell: /var/www/askbot/bin/python manage.py migrate --noinput || true
       chdir=/var/www/askbot/app
