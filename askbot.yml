@@ -1,0 +1,114 @@
+---
+
+
+#!NOTE: this section is applicable to CentOS on the Phase II unmanaged cloud, not JASMIN hosts
+#       JASMIN hosts already have epel installed
+- hosts: askbot
+  name: bootstrap yum repositories
+  remote_user: root
+  tasks:
+  - name: bootstrap epel-release install
+    copy: src=epel-release-6-8.noarch.rpm
+          dest=/root
+          owner=root group=root mode=0644
+
+  - name: epel-release install
+    command: rpm -Uvh /root/epel-release-6-8.noarch.rpm
+             creates=/etc/yum.repos.d/epel.repo
+
+- hosts: askbot
+  name: ensure postgres packages are installed
+  remote_user: root
+  tasks:
+  - yum: name=postgresql-server
+  - yum: name=postgresql-devel # required for pg_config
+  - yum: name=python-psycopg2
+  - command: /sbin/service postgresql initdb creates=/var/lib/pgsql/data
+  - service: name=postgresql state=started
+
+- hosts: askbot
+  name: ensure askbot user and database are created
+  remote_user: root
+  sudo: yes
+  sudo_user: postgres
+  gather_facts: no
+
+  vars:
+    dbname: askbot
+    dbuser: askbot
+    dbpassword: mysupersecretpassword
+
+  tasks:
+  - name: ensure database is created
+    postgresql_db: name={{dbname}} owner={{dbuser}}
+
+  - name: ensure user has access to database
+    postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+  - name: ensure user does not have unnecessary privilege
+    postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+  - name: Ensure posgres is listening on all localhost
+    lineinfile: dest=/var/lib/pgsql/data/postgresql.conf
+      regexp='^#?listen_addresses\s*='
+      line="listen_addresses = '127.0.0.1'"
+      state=present
+    notify: restart postgresql
+
+  - name: Ensure md5 authentication for postgres
+    lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf
+      regexp='host\s+all\s+all\s+127.0.0.1/32'
+      line='host all all 127.0.0.1/32 md5'
+      state=present
+    notify: restart postgresql
+
+  handlers:
+  - name: restart postgresql
+    service: name=postgresql state=restarted
+
+- hosts: askbot
+  remote_user: root
+
+  #!TODO: remove duplicate db config
+  vars:
+    dbname: askbot
+    dbuser: askbot
+    dbpassword: mysupersecretpassword
+    proxy_env:
+      http_proxy: wwwcache.rl.ac.uk:8080
+      https_proxy: wwwcache.rl.ac.uk:8080
+
+  tasks:
+  - name: ensure apache2 is installed
+    yum: name=httpd
+
+  - service: name=httpd state=started
+
+  - name: install virtualenv
+    yum: name=python-virtualenv
+
+  # For some reason this dependency needs to be installed first
+  - pip: name=setuptools-hg  virtualenv=/var/www/askbot
+    environment: proxy_env
+
+  - pip: name=askbot virtualenv=/var/www/askbot
+    environment: proxy_env
+
+  - yum: name=gcc
+  - pip: name=psycopg2 virtualenv=/var/www/askbot
+    environment: proxy_env
+
+  - command: /var/www/askbot/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name=/var/www/askbot/app creates=/var/www/askbot/app/settings.py
+
+  #!NOTE: The colon-character variable substitution is needed to work round a bug in the parser
+  - name: Patch settings.py to use a network socket for DB
+    lineinfile: dest=/var/www/askbot/app/settings.py
+      regexp="^(\s+)'HOST'{{':'}} '',(.*)" 
+      line="\1'HOST'{{':'}} 'localhost',\2"
+      backrefs=yes
+      state=present
+
+  - command: /var/www/askbot/bin/python manage.py syncdb --noinput
+      chdir=/var/www/askbot/app
+  - shell: /var/www/askbot/bin/python manage.py migrate --noinput || true
+      chdir=/var/www/askbot/app

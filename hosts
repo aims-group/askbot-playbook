@@ -1,0 +1,5 @@
+# This is an Ansible Inventory file for your the CEDA ESGF infrastructure
+
+[askbot]
+#esgf-web1.ceda.ac.uk
+130.246.139.248:23
