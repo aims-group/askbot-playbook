@@ -1,0 +1,49 @@
+- hosts: all
+  name: ensure postgres packages are installed
+  remote_user: root
+  tasks:
+  - name: Install Postgres server
+    yum: name=postgresql-server
+  - name: Install Posgres devel for pg_config
+    yum: name=postgresql-devel # required for pg_config
+  - name: Install psycopg2 for ansible db modules
+    yum: name=python-psycopg2
+  - name: Initialise Posgres
+    command: /sbin/service postgresql initdb creates=/var/lib/pgsql/data
+  - name: Start Postgres
+    service: name=postgresql state=started
+
+- hosts: all
+  name: ensure askbot user and database are created
+  remote_user: root
+  sudo: yes
+  sudo_user: postgres
+  gather_facts: no
+
+  tasks:
+  - name: ensure database is created
+    postgresql_db: name={{dbname}} owner={{dbuser}}
+
+  - name: ensure user has access to database
+    postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+  - name: ensure user does not have unnecessary privilege
+    postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+  - name: Ensure posgres is listening on all localhost
+    lineinfile: dest=/var/lib/pgsql/data/postgresql.conf
+      regexp='^#?listen_addresses\s*='
+      line="listen_addresses = '127.0.0.1'"
+      state=present
+    notify: restart postgresql
+
+  - name: Ensure md5 authentication for postgres
+    lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf
+      regexp='host\s+all\s+all\s+127.0.0.1/32'
+      line='host all all 127.0.0.1/32 md5'
+      state=present
+    notify: restart postgresql
+
+  handlers:
+  - name: restart postgresql
+    service: name=postgresql state=restarted

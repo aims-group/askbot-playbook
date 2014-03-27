@@ -1,5 +1,12 @@
 # This is an Ansible Inventory file for your the CEDA ESGF infrastructure
 
+[all:vars]
+proxy_host = wwwcache.rl.ac.uk
+proxy_port = 8080
+dbname = askbot
+dbuser = askbot
+dbpassword = mysupersecretpassword
+
 [askbot]
-#esgf-web1.ceda.ac.uk
-130.246.139.248:23
+130.246.139.248:23 vm_type=jasmin_unmanaged
+

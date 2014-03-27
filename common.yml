@@ -1,0 +1,20 @@
+---
+
+#!NOTE: this section is applicable to CentOS on the Phase II unmanaged cloud, not JASMIN hosts
+#       JASMIN hosts already have epel installed
+- hosts: all
+  name: bootstrap yum repositories
+  remote_user: root
+
+  tasks:
+  - name: bootstrap epel-release install
+    copy: src=epel-release-6-8.noarch.rpm
+          dest=/root
+          owner=root group=root mode=0644
+    when: vm_type == 'jasmin_unmanaged'
+
+  - name: epel-release install
+    command: rpm -Uvh /root/epel-release-6-8.noarch.rpm
+             creates=/etc/yum.repos.d/epel.repo
+    when: vm_type == 'jasmin_unmanaged'
+      

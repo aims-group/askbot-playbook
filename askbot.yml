@@ -1,96 +1,19 @@
 ---
 
+# Do VM boostrapping 
+- include: common.yml
 
-#!NOTE: this section is applicable to CentOS on the Phase II unmanaged cloud, not JASMIN hosts
-#       JASMIN hosts already have epel installed
-- hosts: askbot
-  name: bootstrap yum repositories
-  remote_user: root
-  tasks:
-  - name: bootstrap epel-release install
-    copy: src=epel-release-6-8.noarch.rpm
-          dest=/root
-          owner=root group=root mode=0644
-
-  - name: epel-release install
-    command: rpm -Uvh /root/epel-release-6-8.noarch.rpm
-             creates=/etc/yum.repos.d/epel.repo
-
-- hosts: askbot
-  name: ensure postgres packages are installed
-  remote_user: root
-  tasks:
-  - name: Install Postgres server
-    yum: name=postgresql-server
-  - name: Install Posgres devel for pg_config
-    yum: name=postgresql-devel # required for pg_config
-  - name: Install psycopg2 for ansible db modules
-    yum: name=python-psycopg2
-  - name: Initialise Posgres
-    command: /sbin/service postgresql initdb creates=/var/lib/pgsql/data
-  - name: Start Postgres
-    service: name=postgresql state=started
-
-- hosts: askbot
-  name: ensure askbot user and database are created
-  remote_user: root
-  sudo: yes
-  sudo_user: postgres
-  gather_facts: no
-
-  vars:
-    dbname: askbot
-    dbuser: askbot
-    dbpassword: mysupersecretpassword
-
-  tasks:
-  - name: ensure database is created
-    postgresql_db: name={{dbname}} owner={{dbuser}}
-
-  - name: ensure user has access to database
-    postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
-
-  - name: ensure user does not have unnecessary privilege
-    postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
-
-  - name: Ensure posgres is listening on all localhost
-    lineinfile: dest=/var/lib/pgsql/data/postgresql.conf
-      regexp='^#?listen_addresses\s*='
-      line="listen_addresses = '127.0.0.1'"
-      state=present
-    notify: restart postgresql
-
-  - name: Ensure md5 authentication for postgres
-    lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf
-      regexp='host\s+all\s+all\s+127.0.0.1/32'
-      line='host all all 127.0.0.1/32 md5'
-      state=present
-    notify: restart postgresql
-
-  handlers:
-  - name: restart postgresql
-    service: name=postgresql state=restarted
-
-#!TODO: Install and configure apache2
-#  tasks:
-#  - name: ensure apache2 is installed
-#    yum: name=httpd
-#
-#  - service: name=httpd state=started
-
+# Install and configure the database
+- include: db.yml
 
 - hosts: askbot
   name: install askbot webapp
   remote_user: root
 
-  #!TODO: remove duplicate db config
   vars:
-    dbname: askbot
-    dbuser: askbot
-    dbpassword: mysupersecretpassword
     proxy_env:
-      http_proxy: wwwcache.rl.ac.uk:8080
-      https_proxy: wwwcache.rl.ac.uk:8080
+      http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+      https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
 
   tasks:
   - name: install virtualenv
