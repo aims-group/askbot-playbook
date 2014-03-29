@@ -1,0 +1,9 @@
+##############################################################################
+# Local settings for askbot
+
+def init(settings):
+    settings['DATABASES']['default']['HOST'] = 'localhost'
+    settings['STATIC_URL'] = '/{{ app_name }}/static/'
+    settings['ADMIN_MEDIA_PREFIX'] = settings['STATIC_URL'] + 'admin/'
+
+#!TODO: MEDIA_ROOT

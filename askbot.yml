@@ -39,19 +39,25 @@
   - name: run askbot-setup to create the webapp
     command: "{{ app_venv }}/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name={{ app_dir }} creates={{ app_dir }}/settings.py"
 
-  #!NOTE: The colon-character variable substitution is needed to work round a bug in the parser
-  - name: patch settings.py to use a network socket for DB
+  - name: Add local settings
+    template: src=local_settings.py.j2 dest={{ app_dir }}/local_settings.py
+
+  - name: Add local_settings.py import to settings.py
     lineinfile: dest={{ app_dir }}/settings.py
-      regexp="^(\s+)'HOST'{{':'}} '',(.*)" 
-      line="\1'HOST'{{':'}} 'localhost',\2"
-      backrefs=yes
+      regexp="^import local_settings"
       state=present
+      insertafter=EOF
+      line='import local_settings ; local_settings.init(globals())'
 
   - name: syncdb askbot
     command: "{{ app_venv }}/bin/python manage.py syncdb --noinput
       chdir={{ app_dir }}"
   - name: migrate askbot
     shell: "{{ app_venv }}/bin/python manage.py migrate --noinput || true
+      chdir={{ app_dir }}"
+
+  - name: collect static
+    command: "{{ app_venv }}/bin/python manage.py collectstatic --noinput
       chdir={{ app_dir }}"
 
   - name: make the app owned by apache
