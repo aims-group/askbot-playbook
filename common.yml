@@ -18,3 +18,8 @@
              creates=/etc/yum.repos.d/epel.repo
     when: vm_type == 'jasmin_unmanaged'
       
+  - name: ensure yum has proxy configured
+    lineinfile: dest=/etc/yum.conf
+      regexp='^proxy='
+      line='proxy=http://wwwcache.rl.ac.uk:8080'
+      state=present

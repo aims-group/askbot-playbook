@@ -5,7 +5,10 @@
 # Do VM boostrapping 
 - include: common.yml
 
-# Install and configure the database
+# Install basic apache and postgres
+- include: services.yml
+
+# Configure the database for askbot
 - include: db.yml
 
 - hosts: askbot
@@ -35,6 +38,10 @@
   - name: install askbot into virtualenv
     pip: name=askbot virtualenv={{ app_venv }}
     environment: proxy_env
+
+  #!TODO: Needs reviewing.  Logs should probably be different.
+  - name: create askbot http log directory
+    file: dest={{ app_venv }}/log owner=apache state=directory
 
   - name: run askbot-setup to create the webapp
     command: "{{ app_venv }}/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name={{ app_dir }} creates={{ app_dir }}/settings.py"
