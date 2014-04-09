@@ -6,4 +6,14 @@ def init(settings):
     settings['STATIC_URL'] = '/{{ app_name }}/static/'
     settings['ADMIN_MEDIA_PREFIX'] = settings['STATIC_URL'] + 'admin/'
 
+    #outgoing mail server settings
+    SERVER_EMAIL = "{{ app_email }}"
+    DEFAULT_FROM_EMAIL = "{{ app_email }}"
+    #EMAIL_HOST_USER = ''
+    #EMAIL_HOST_PASSWORD = ''
+    settings['EMAIL_SUBJECT_PREFIX'] = '[esgf-askbot] '
+    settings['EMAIL_HOST'] = 'localhost'
+    #EMAIL_PORT=''
+
+
 #!TODO: MEDIA_ROOT
