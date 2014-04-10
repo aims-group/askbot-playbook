@@ -15,10 +15,12 @@
   name: install askbot webapp
   remote_user: root
 
+  #!TODO: Better var management.  debug_email is not in a good place.
   vars:
     proxy_env:
       http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
       https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+    debug_email: true
 
   tasks:
   - name: install virtualenv
@@ -47,11 +49,16 @@
   - name: create askbot http log directory
     file: dest={{ app_venv }}/log owner=apache state=directory
 
+  # For debugging without spamming people's email
+  - name: create debug-email directory
+    file: dest={{ app_dir }}/log/messages owner=apache state=directory
+
   - name: run askbot-setup to create the webapp
     command: "{{ app_venv }}/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name={{ app_dir }} creates={{ app_dir }}/settings.py"
 
   - name: Add local settings
     template: src=local_settings.py.j2 dest={{ app_dir }}/local_settings.py
+    environment: proxy_env
 
   - name: Add local_settings.py import to settings.py
     lineinfile: dest={{ app_dir }}/settings.py

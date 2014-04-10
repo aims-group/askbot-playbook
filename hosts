@@ -5,14 +5,16 @@ proxy_host = wwwcache.rl.ac.uk
 proxy_port = 8080
 dbname = askbot
 dbuser = askbot
-dbpassword = mysupersecretpassword
+dbpassword = "{{ lookup('password',  'askbot_db_password.txt') }}"
+app_email = 'noreply@esgf-web1.ceda.ac.uk'
 
 [askbot]
 #130.246.139.248:23 
-localhost:2222
+#localhost:2222
+esgf-web1.ceda.ac.uk
 
 [askbot:vars]
-vm_type=jasmin_unmanaged
+vm_type=jasmin_managed
 app_name = askbot
 app_package = askbot_site
 app_dir = /var/www/askbot/askbot_site
