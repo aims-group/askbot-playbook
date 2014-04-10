@@ -27,6 +27,14 @@
   - name: Start Postgres
     service: name=postgresql state=started enabled=yes
 
+- hosts: all
+  name: Install memcached
+  remote_user: root
+  tasks:
+    - yum: name=memcached
+    - yum: name=memcached-devel
+    - service: name=memcached state=started enabled=yes
+
 #!TODO: Proper iptables configuration
 - hosts: all
   name: Disable firewall for testing

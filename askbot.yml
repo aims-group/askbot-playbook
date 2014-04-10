@@ -30,6 +30,10 @@
     pip: name=psycopg2 virtualenv={{ app_venv }}
     environment: proxy_env
 
+  - name: install python-memcached into askbot virtualenv
+    pip: name=python-memcached virtualenv={{ app_venv }}
+    environment: proxy_env
+
   # For some reason this dependency needs to be installed first
   - name: install askbot prerequisite setuptools-hg into virtualenv
     pip: name=setuptools-hg  virtualenv={{ app_venv }}
