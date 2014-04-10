@@ -1,0 +1,38 @@
+---
+- hosts: all
+  name: stop services for database recovery
+  remote_user: root
+  tasks:
+  - name: Stop apache
+    service: name=httpd state=stopped
+
+
+- hosts: all
+  name: Recover database
+  remote_user: root
+  sudo: yes
+  sudo_user: postgres
+  gather_facts: no
+
+  tasks:
+  - name: Drop database
+    command: dropdb {{dbname}} chdir='/var/lib/pgsql'
+    
+  - name: Copy database dump to server
+    copy: dest=/tmp/askbot-recover.sql src={{ recover_db }}
+
+  - name: ensure database is created
+    postgresql_db: name={{dbname}} owner={{dbuser}}
+
+  - name: recover database
+    command: psql {{dbname}} -f /tmp/askbot-recover.sql chdir='/var/lib/pgsql'
+
+- hosts: all
+  name: restart services
+  remote_user: root
+  tasks:
+  - name: restart memcached
+    service: name=memcached state=restarted
+
+  - name: Restart apache
+    service: name=httpd state=started
