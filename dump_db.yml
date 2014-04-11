@@ -1,0 +1,20 @@
+---
+- hosts: all
+  name: Dump database and fetch from server
+  remote_user: root
+  sudo: yes
+  sudo_user: postgres
+  tasks:
+
+  - name: register backup timestamp
+    command: date +'%Y-%m-%d.%H%M'
+    register: timestamp
+
+  - name: Ensure backup directory exists on remote server
+    file: dest=/var/lib/pgsql/backups owner=postgres state=directory
+  
+  - name: Backup database
+    command: pg_dump {{dbname}} -Fc -f /var/lib/pgsql/backups/{{dbname}}-{{timestamp.stdout}}.pgdump chdir=/var/lib/pgsql
+
+  - name: fetch from server
+    fetch: dest=db_dumps/ flat=true src=/var/lib/pgsql/backups/{{dbname}}-{{timestamp.stdout}}.pgdump
