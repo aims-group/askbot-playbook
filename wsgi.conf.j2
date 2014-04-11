@@ -4,9 +4,15 @@ LogLevel warn
 
 ErrorLog {{ log_dir }}/{{ app_name }}_error.log
 CustomLog {{ log_dir }}/{{ app_name }}.log combined
-Alias /{{ app_name }}/static {{ app_dir }}/static
-    
+
+Alias /{{ app_name }}/static {{ app_dir }}/static    
 <Directory {{ app_dir }}/static>
+  Order allow,deny
+  Allow from all
+</Directory>
+
+Alias /{{ app_name }}/upfiles {{ app_dir }}/upfiles
+<Directory {{ app_dir }}/upfiles>
   Order allow,deny
   Allow from all
 </Directory>

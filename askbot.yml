@@ -78,6 +78,14 @@
     command: "{{ app_venv }}/bin/python manage.py collectstatic --noinput
       chdir={{ app_dir }}"
 
+  - name: create upfiles directory
+    file: dest={{ app_dir }}/upfiles owner=apache state=directory
+
+  #- name: copy local upfiles to server
+  #!TODO
+  
+  
+
   - name: make the app owned by apache
     file: dest={{ app_dir }} owner=apache recurse=yes state=directory
 

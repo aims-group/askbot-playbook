@@ -24,6 +24,9 @@ def init(settings):
         }
     del settings['CACHE_BACKEND']
 
+    settings['MEDIA_ROOT'] = '{{ app_dir }}/upfiles'
+    settings['MEDIA_URL'] = '/{{ app_name }}/upfiles/'
+
 {% if debug_email %}
     settings['EMAIL_BACKEND'] = 'django.core.mail.backends.filebased.EmailBackend'
     settings['EMAIL_FILE_PATH'] = '{{ app_venv }}/log/messages'
@@ -32,5 +35,3 @@ def init(settings):
 {% endif %}
 
     settings['DEBUG'] = False    
-
-#!TODO: MEDIA_ROOT
