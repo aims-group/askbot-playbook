@@ -36,9 +36,9 @@
     - service: name=memcached state=started enabled=yes
 
 #!TODO: Proper iptables configuration
-- hosts: all
-  name: Disable firewall for testing
-  remote_user: root
-  tasks:
-  - service: name=iptables state=stopped
+#- hosts: all
+#  name: Disable firewall for testing
+#  remote_user: root
+#  tasks:
+#  - service: name=iptables state=stopped
   
