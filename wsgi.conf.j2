@@ -5,6 +5,8 @@ LogLevel warn
 ErrorLog {{ log_dir }}/{{ app_name }}_error.log
 CustomLog {{ log_dir }}/{{ app_name }}.log combined
 
+RedirectMatch 302 ^/$ /{{ app_name }}/
+
 Alias /{{ app_name }}/static {{ app_dir }}/static    
 <Directory {{ app_dir }}/static>
   Order allow,deny
