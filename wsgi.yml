@@ -6,6 +6,8 @@
   vars:
     app_wsgi_path: "{{ app_dir }}/wsgi.py"
     app_wsgi_conf_path: /etc/httpd/conf.d/{{ app_name }}.conf
+    http_proxy: "wwwcache.rl.ac.uk:8080"
+    https_proxy: "wwwcache.rl.ac.uk:8080"
 
   tasks:
     - name: install wsgi.py

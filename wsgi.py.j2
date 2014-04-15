@@ -9,6 +9,20 @@ import os.path as op
 #this is the path to the virtualenv python site-package dir
 vepath = "{{ app_venv }}"
 
+
+# Configure proxy
+os.environ['http_proxy'] = '{{ http_proxy }}'
+os.environ['https_proxy'] = '{{ https_proxy }}'
+
+
+# Very ugly hack to hide pycurl and fallback to urllib2 which will accept insecure SSL OpenIDs
+try:
+    import pycurl
+    sys.modules['pycurl'] = None
+except ImportError:
+    pass
+
+
 ##############################################################################
 # mod_wsgi virtualenv setup as documented at 
 #   http://code.google.com/p/modwsgi/wiki/VirtualEnvironments
