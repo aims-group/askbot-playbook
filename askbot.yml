@@ -20,7 +20,7 @@
     proxy_env:
       http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
       https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
-    debug_email: true
+    debug_email: false #true
 
   tasks:
   - name: install virtualenv
@@ -92,3 +92,9 @@
 # Install Apache and mod_wsgi
 - include: wsgi.yml
 
+
+- hosts: askbot
+  name: clean up installation RPMs
+  remote_user: root
+  tasks:
+  - yum: name=gcc state=removed
