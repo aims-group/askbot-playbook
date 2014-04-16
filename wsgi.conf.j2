@@ -2,22 +2,23 @@
 # alert, emerg.
 LogLevel warn
 
+<VirtualHost *:80>
+ServerName askbot.esgf.org
+
 ErrorLog {{ log_dir }}/{{ app_name }}_error.log
 CustomLog {{ log_dir }}/{{ app_name }}.log combined
 
-RedirectMatch 302 ^/$ /{{ app_name }}/
-
-Alias /{{ app_name }}/static {{ app_dir }}/static    
+Alias /static {{ app_dir }}/static    
 <Directory {{ app_dir }}/static>
   Order allow,deny
   Allow from all
 </Directory>
 
-Alias /{{ app_name }}/upfiles {{ app_dir }}/upfiles
+Alias /upfiles {{ app_dir }}/upfiles
 <Directory {{ app_dir }}/upfiles>
   Order allow,deny
   Allow from all
 </Directory>
     
-WSGIScriptAlias /{{ app_name }} {{ app_wsgi_path }}
-
+WSGIScriptAlias / {{ app_wsgi_path }}
+</VirtualHost>

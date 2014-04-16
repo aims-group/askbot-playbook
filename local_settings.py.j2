@@ -3,7 +3,7 @@
 
 def init(settings):
     settings['DATABASES']['default']['HOST'] = 'localhost'
-    settings['STATIC_URL'] = '/{{ app_name }}/static/'
+    settings['STATIC_URL'] = '/static/'
     settings['ADMIN_MEDIA_PREFIX'] = settings['STATIC_URL'] + 'admin/'
 
     #outgoing mail server settings
@@ -25,7 +25,7 @@ def init(settings):
     del settings['CACHE_BACKEND']
 
     settings['MEDIA_ROOT'] = '{{ app_dir }}/upfiles'
-    settings['MEDIA_URL'] = '/{{ app_name }}/upfiles/'
+    settings['MEDIA_URL'] = '/upfiles/'
 
 {% if debug_email %}
     settings['EMAIL_BACKEND'] = 'django.core.mail.backends.filebased.EmailBackend'
