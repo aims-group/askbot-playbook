@@ -1,0 +1,4 @@
+---
+proxy_venv:
+  http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+  https_proxy: "{{ proxy_host }}:{{ proxy_port }}"

@@ -1,28 +1,4 @@
 ---
-
-#!TODO: collectstatic and fix settings to point the right place
-
-# Do VM boostrapping 
-- include: common.yml
-
-# Install basic apache and postgres
-- include: services.yml
-
-# Configure the database for askbot
-- include: db.yml
-
-- hosts: askbot
-  name: install askbot webapp
-  remote_user: root
-
-  #!TODO: Better var management.  debug_email is not in a good place.
-  vars:
-    proxy_env:
-      http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
-      https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
-    debug_email: false #true
-
-  tasks:
   - name: install virtualenv
     yum: name=python-virtualenv
 
@@ -84,10 +60,9 @@
   #- name: copy local upfiles to server
   #!TODO
   
-  
-
   - name: make the app owned by apache
     file: dest={{ app_dir }} owner=apache recurse=yes state=directory
+
 
 # Install Apache and mod_wsgi
 - include: wsgi.yml

@@ -1,0 +1,27 @@
+---
+- name: Install Postgres server
+  yum: name=postgresql-server
+
+- name: Install Posgres devel for pg_config
+  yum: name=postgresql-devel # required for pg_config
+
+- name: Install psycopg2 for ansible db modules
+  yum: name=python-psycopg2
+
+- name: Initialise Posgres
+  command: /sbin/service postgresql initdb creates=/var/lib/pgsql/data/postgresql.conf
+
+- name: Ensure posgres is listening on all localhost
+  lineinfile: dest=/var/lib/pgsql/data/postgresql.conf
+  regexp='^#?listen_addresses\s*='
+  line="listen_addresses = '127.0.0.1'"
+  state=present
+
+- name: Ensure md5 authentication for postgres
+  lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf
+  regexp='host\s+all\s+all\s+127.0.0.1/32'
+  line='host all all 127.0.0.1/32 md5'
+  state=present
+
+- name: Start Postgres
+  service: name=postgresql state=started enabled=yes

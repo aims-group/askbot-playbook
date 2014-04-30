@@ -1,0 +1,9 @@
+---
+- name: install apache2
+  yum: name=httpd
+
+- name: install mod-wsgi
+      yum: name=mod_wsgi
+  
+- name: start httpd
+  service: name=httpd state=started enabled=yes
