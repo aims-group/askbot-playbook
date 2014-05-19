@@ -13,15 +13,15 @@
 
 - name: Ensure posgres is listening on all localhost
   lineinfile: dest=/var/lib/pgsql/data/postgresql.conf
-  regexp='^#?listen_addresses\s*='
-  line="listen_addresses = '127.0.0.1'"
-  state=present
+    regexp='^#?listen_addresses\s*='
+    line="listen_addresses = '127.0.0.1'"
+    state=present
 
 - name: Ensure md5 authentication for postgres
   lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf
-  regexp='host\s+all\s+all\s+127.0.0.1/32'
-  line='host all all 127.0.0.1/32 md5'
-  state=present
+    regexp='host\s+all\s+all\s+127.0.0.1/32'
+    line='host all all 127.0.0.1/32 md5'
+    state=present
 
 - name: Start Postgres
   service: name=postgresql state=started enabled=yes

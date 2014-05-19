@@ -2,14 +2,14 @@
 app_name: askbot
 app_venv: /var/www/{{ app_name }}
 
-app_package = "{{ app_name }}_site"
-app_dir = "{{ app_venv }}/{{ app_package }}"
-log_dir = "{{ app_venv}}/log"
+app_package: "{{ app_name }}_site"
+app_dir: "{{ app_venv }}/{{ app_package }}"
+log_dir: "{{ app_venv}}/log"
 
 app_wsgi_path: "{{ app_dir }}/wsgi.py"
 app_wsgi_conf_path: /etc/httpd/conf.d/{{ app_name }}.conf
 
 dbname: "{{ app_name }}"
 dbuser: "{{ app_name }}"
-dbpassword = "{{ lookup('password',  'askbot_db_password.txt') }}"
-app_email = 'noreply@esgf-web1.ceda.ac.uk'
+dbpassword: "{{ lookup('password',  'askbot_db_password.txt') }}"
+app_email: 'noreply@esgf-web1.ceda.ac.uk'

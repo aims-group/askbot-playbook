@@ -1,75 +1,72 @@
 ---
-  - name: install virtualenv
-    yum: name=python-virtualenv
-
-  - name: install gcc, required for askbot dependencies
-    yum: name=gcc
-  - name: install psycopg2 into askbot virtualenv
-    pip: name=psycopg2 virtualenv={{ app_venv }}
-    environment: proxy_env
-
-  - name: install python-memcached into askbot virtualenv
-    pip: name=python-memcached virtualenv={{ app_venv }}
-    environment: proxy_env
-
-  # For some reason this dependency needs to be installed first
-  - name: install askbot prerequisite setuptools-hg into virtualenv
-    pip: name=setuptools-hg  virtualenv={{ app_venv }}
-    environment: proxy_env
-
-  - name: install askbot into virtualenv
-    pip: name=askbot virtualenv={{ app_venv }}
-    environment: proxy_env
-
-  #!TODO: Needs reviewing.  Logs should probably be different.
-  - name: create askbot http log directory
-    file: dest={{ app_venv }}/log owner=apache state=directory
-
-  # For debugging without spamming people's email
-  - name: create debug-email directory
-    file: dest={{ app_dir }}/log/messages owner=apache state=directory
-
-  - name: run askbot-setup to create the webapp
-    command: "{{ app_venv }}/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name={{ app_dir }} creates={{ app_dir }}/settings.py"
-
-  - name: Add local settings
-    template: src=local_settings.py.j2 dest={{ app_dir }}/local_settings.py
-    environment: proxy_env
-
-  - name: Add local_settings.py import to settings.py
-    lineinfile: dest={{ app_dir }}/settings.py
-      regexp="^import local_settings"
-      state=present
-      insertafter=EOF
-      line='import local_settings ; local_settings.init(globals())'
-
-  - name: syncdb askbot
-    command: "{{ app_venv }}/bin/python manage.py syncdb --noinput
-      chdir={{ app_dir }}"
-  - name: migrate askbot
-    shell: "{{ app_venv }}/bin/python manage.py migrate --noinput || true
-      chdir={{ app_dir }}"
-
-  - name: collect static
-    command: "{{ app_venv }}/bin/python manage.py collectstatic --noinput
-      chdir={{ app_dir }}"
-
-  - name: create upfiles directory
-    file: dest={{ app_dir }}/upfiles owner=apache state=directory
-
-  #- name: copy local upfiles to server
-  #!TODO
+- name: install virtualenv
+  yum: name=python-virtualenv
   
-  - name: make the app owned by apache
-    file: dest={{ app_dir }} owner=apache recurse=yes state=directory
+- name: install gcc, required for askbot dependencies
+  yum: name=gcc
+- name: install psycopg2 into askbot virtualenv
+  pip: name=psycopg2 virtualenv={{ app_venv }}
+  environment: proxy_env
+
+- name: install python-memcached into askbot virtualenv
+  pip: name=python-memcached virtualenv={{ app_venv }}
+  environment: proxy_env
+
+# For some reason this dependency needs to be installed first
+- name: install askbot prerequisite setuptools-hg into virtualenv
+  pip: name=setuptools-hg  virtualenv={{ app_venv }}
+  environment: proxy_env
+
+- name: install askbot into virtualenv
+  pip: name=askbot virtualenv={{ app_venv }}
+  environment: proxy_env
+
+#!TODO: Needs reviewing.  Logs should probably be different.
+- name: create askbot http log directory
+  file: dest={{ app_venv }}/log owner=apache state=directory
+
+# For debugging without spamming people's email
+- name: create debug-email directory
+  file: dest={{ app_dir }}/log/messages owner=apache state=directory
+  
+- name: run askbot-setup to create the webapp
+  command: "{{ app_venv }}/bin/askbot-setup --db-engine=1 --db-name={{dbname}} --db-password={{dbpassword}} --db-user={{dbuser}} --dir-name={{ app_dir }} creates={{ app_dir }}/settings.py"
+
+- name: Add local settings
+  template: src=local_settings.py.j2 dest={{ app_dir }}/local_settings.py
+  environment: proxy_env
+
+- name: Add local_settings.py import to settings.py
+  lineinfile: dest={{ app_dir }}/settings.py
+    regexp="^import local_settings"
+    state=present
+    insertafter=EOF
+    line='import local_settings ; local_settings.init(globals())'
+
+- name: syncdb askbot
+  command: "{{ app_venv }}/bin/python manage.py syncdb --noinput
+    chdir={{ app_dir }}"
+- name: migrate askbot
+  shell: "{{ app_venv }}/bin/python manage.py migrate --noinput || true
+    chdir={{ app_dir }}"
+
+- name: collect static
+  command: "{{ app_venv }}/bin/python manage.py collectstatic --noinput
+    chdir={{ app_dir }}"
+
+- name: create upfiles directory
+  file: dest={{ app_dir }}/upfiles owner=apache state=directory
+
+#- name: copy local upfiles to server
+#!TODO
+  
+- name: make the app owned by apache
+  file: dest={{ app_dir }} owner=apache recurse=yes state=directory
 
 
 # Install Apache and mod_wsgi
 - include: wsgi.yml
 
 
-- hosts: askbot
-  name: clean up installation RPMs
-  remote_user: root
-  tasks:
-  - yum: name=gcc state=removed
+- name: clean up installation RPMs
+  yum: name=gcc state=removed

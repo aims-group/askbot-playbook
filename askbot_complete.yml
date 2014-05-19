@@ -1,0 +1,12 @@
+#
+# 
+#
+
+- hosts: askbot
+  name: Deploy askbot and all dependencies into a single host
+  roles:
+    - jasmin
+    - postgres
+    - apache
+    - memcached
+    - askbot
