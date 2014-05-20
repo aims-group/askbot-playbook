@@ -13,3 +13,7 @@ dbname: "{{ app_name }}"
 dbuser: "{{ app_name }}"
 dbpassword: "{{ lookup('password',  'askbot_db_password.txt') }}"
 app_email: 'noreply@esgf-web1.ceda.ac.uk'
+
+proxy_env:
+  http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+  https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
