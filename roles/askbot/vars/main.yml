@@ -11,7 +11,7 @@ app_wsgi_conf_path: /etc/httpd/conf.d/{{ app_name }}.conf
 
 dbname: "{{ app_name }}"
 dbuser: "{{ app_name }}"
-dbpassword: "{{ lookup('password',  'askbot_db_password.txt', chars=ascii,digits) }}"
+dbpassword: "{{ lookup('password',  inventory_dir + '/lookups/askbot_db_password.txt chars=ascii,digits') }}"
 app_email: 'noreply@esgf-web1.ceda.ac.uk'
 
 proxy_env:
