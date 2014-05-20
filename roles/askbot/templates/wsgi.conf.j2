@@ -3,7 +3,7 @@
 LogLevel warn
 
 <VirtualHost *:80>
-ServerName askbot.esgf.org
+ServerName {{ app_vhost }}
 
 ErrorLog {{ log_dir }}/{{ app_name }}_error.log
 CustomLog {{ log_dir }}/{{ app_name }}.log combined

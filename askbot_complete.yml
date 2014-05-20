@@ -10,7 +10,8 @@
     - postgres
     - apache
     - memcached
-    - askbot
+    - { role: askbot, app_name: askbot_esgf, app_vhost: askbot.localhost }
+    - { role: askbot, app_name: askbot_clim4i, app_vhost: clim4i.localhost }
   vars:
     - debug_email: yes
     - http_proxy: "{{ proxy_host }}:{{ proxy_port }}"

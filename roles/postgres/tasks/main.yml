@@ -26,4 +26,3 @@
 - name: Start Postgres
   service: name=postgresql state=started enabled=yes
 
-- include: createdb.yml
