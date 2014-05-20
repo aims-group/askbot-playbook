@@ -2,7 +2,7 @@
 # Local settings for askbot
 
 def init(settings):
-    settings['DATABASES']['default']['HOST'] = 'localhost'
+    settings['DATABASES']['default']['HOST'] = '127.0.0.1'
     settings['STATIC_URL'] = '/static/'
     settings['ADMIN_MEDIA_PREFIX'] = settings['STATIC_URL'] + 'admin/'
 
