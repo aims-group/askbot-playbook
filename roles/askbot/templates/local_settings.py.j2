@@ -27,6 +27,8 @@ def init(settings):
     settings['MEDIA_ROOT'] = '{{ app_dir }}/upfiles'
     settings['MEDIA_URL'] = '/upfiles/'
 
+    settings['CACHE_PREFIX'] = '{{ app_name }}'
+
 {% if debug_email %}
     settings['EMAIL_BACKEND'] = 'django.core.mail.backends.filebased.EmailBackend'
     settings['EMAIL_FILE_PATH'] = '{{ app_venv }}/log/messages'
