@@ -1,22 +1,17 @@
 # This is an Ansible Inventory file for your the CEDA ESGF infrastructure
 
 [all:vars]
+# This is the STFC site proxy.  Other deployments probably want to make these variables empty.
 proxy_host = wwwcache.rl.ac.uk
 proxy_port = 8080
-dbname = askbot
-dbuser = askbot
-dbpassword = "{{ lookup('password',  'askbot_db_password.txt') }}"
-app_email = 'noreply@esgf-web1.ceda.ac.uk'
 
 [askbot]
-#130.246.139.248:23 
-#localhost:2222
-esgf-web1.ceda.ac.uk
+# List all hosts onto which you want to deploy here.
+localhost:2222
+#esgf-web1.ceda.ac.uk
 
 [askbot:vars]
-vm_type=jasmin_managed
-app_name = askbot
-app_package = askbot_site
-app_dir = /var/www/askbot/askbot_site
-app_venv = /var/www/askbot
-log_dir = /var/www/askbot/log
+# This variable controls how the RPM system is set up on the host.  in the JASMIN environment
+# we need to configure yum differently depending on whether the hosts are managed or unmanaged.
+# You only need to set this if you include the "jasmin" role in your playbook.
+vm_type=jasmin_unmanaged
