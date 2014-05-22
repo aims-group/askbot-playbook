@@ -7,8 +7,8 @@ proxy_port = 8080
 
 [askbot]
 # List all hosts onto which you want to deploy here.
-#localhost:2222
-esgf-web1.ceda.ac.uk
+localhost:2222
+#esgf-web1.ceda.ac.uk
 
 [askbot:vars]
 # This variable controls how the RPM system is set up on the host.  in the JASMIN environment
