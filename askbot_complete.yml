@@ -17,9 +17,9 @@
     # List each Askbot instance here with their vhost.  Database passwords are automatically
     # saved to the ./lookups directory on the Ansible control host.
     #!WARNING: multiple instances don't work yet!
-    - { role: askbot, app_name: askbot_esgf, app_vhost: askbot.localhost, 
+    - { role: askbot, app_name: askbot_esgf, app_vhost: askbot.localdomain, 
           app_email: noreply@esgf-web1.ceda.ac.uk }
-    #- { role: askbot, app_name: askbot_clim4i, app_vhost: clim4i.localhost }
+    - { role: askbot, app_name: askbot_clim4i, app_vhost: clim4i.localdomain }
   vars:
     # If debug_email is yes then Askbot will not send out email but will save emails to a
     # directory instead (/var/www/askbot/<app_name>_site/log/messages)
