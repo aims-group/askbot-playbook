@@ -21,12 +21,14 @@
   pip: name=askbot virtualenv={{ app_venv }}
   environment: proxy_env
 
-#!TODO: Needs reviewing.  Logs should probably be different.
 - name: create askbot http log directory
   file: dest={{ app_venv }}/log owner=apache state=directory
 
 - name: create database
   include: "{{ inventory_dir }}/roles/postgres/tasks/createdb.yml"
+
+- name: configure database backups
+  include: "{{ inventory_dir }}/roles/postgres/tasks/backup.yml"
 
 # For debugging without spamming people's email
 - name: create debug-email directory

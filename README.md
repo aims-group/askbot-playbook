@@ -2,9 +2,9 @@ This repository contains Ansible playbooks deploying Askbot.
 
  1. Get a clean CentOS or RHEL VM where you can ssh in as root using ssh keys.
  2. Install Ansible (www.ansible.com)
- 3. Edit ```hosts``` to set which hostname you are deploying onto.
+ 3. Edit ```hosts.devel``` to set which hostname you are deploying onto.
  4. Edit ```askbot_complete.yml``` to set the hostname of your site and other application options.
- 5. Run ```ansible-playbook -i hosts askbot_complete.yml```
+ 5. Run ```ansible-playbook -i hosts.devel askbot_complete.yml```
 
 This should do the following:
 
