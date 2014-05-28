@@ -1,6 +1,9 @@
 #
 # Backup a database every day
 #
+- name: ensure postgres has permission to use cron
+  lineinfile: dest=/etc/cron.allow line='postgres'
+
 - name: backup database
   sudo: yes
   sudo_user: postgres
