@@ -1,0 +1,9 @@
+#
+# Backup a database every day
+#
+- name: backup database
+  sudo: yes
+  sudo_user: postgres
+  #!NOTE: cron escapes "%" characters
+  cron: name="backup database {{dbname}}" hour=5 minute=0 job="pg_dump -Fc -f /var/lib/pgsql/backups/{{dbname}}_$(date +\\%Y-\\%m-\\%d).pg_dump {{dbname}}"
+        state=present
