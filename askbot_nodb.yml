@@ -1,0 +1,40 @@
+#
+# An Ansible playbook for an Askbot installation with separately managed database
+#
+
+- hosts: askbot
+  name: Deploy askbot and all dependencies into a single host
+  user: root
+  roles:
+    # Include the jasmin role only if you are deploying on JASMIN.
+    - jasmin
+
+    # These roles install services Askbot depends on.
+    - apache
+    - memcached
+
+    # List each Askbot instance here with their vhost.  
+    # We override db connection parameters here to prevent them from being auto-generated.
+    - role: askbot
+      app_name: askbot_esgf
+      app_vhost: askbot.esgf.org 
+      app_email: noreply@esgf-web1.ceda.ac.uk
+      dbuser: ""
+      dbhost: ""
+      dbpassword: ""
+    - role: askbot
+      app_name: askbot_clim4i
+      app_vhost: askbot.climate4impact.eu
+      app_email: noreply@esgf-web1.ceda.ac.uk
+      dbuser: ""
+      dbhost: ""
+      dbpassword: ""
+
+  vars:
+    # If debug_email is yes then Askbot will not send out email but will save emails to a
+    # directory instead (/var/www/askbot/<app_name>_site/log/messages)
+    - debug_email: yes
+    # Required if you are behing the STFC proxy.
+    - http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+    - https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+    - createdb: no
