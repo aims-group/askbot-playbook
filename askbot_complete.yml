@@ -24,6 +24,9 @@
     # If debug_email is yes then Askbot will not send out email but will save emails to a
     # directory instead (/var/www/askbot/<app_name>_site/log/messages)
     - debug_email: yes
+    # Should the askbot database be created or does it already exist?
+    - createdb: yes
     # Required if you are behing the STFC proxy.
     - http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
     - https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+      

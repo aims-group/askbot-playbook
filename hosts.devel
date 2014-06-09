@@ -15,3 +15,4 @@ localhost:2222
 # we need to configure yum differently depending on whether the hosts are managed or unmanaged.
 # You only need to set this if you include the "jasmin" role in your playbook.
 vm_type=jasmin_unmanaged
+dbhost=db1.ceda.ac.uk

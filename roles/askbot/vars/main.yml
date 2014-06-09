@@ -12,6 +12,7 @@ app_wsgi_conf_path: /etc/httpd/conf.d/{{ app_name }}.conf
 
 dbname: "{{ app_name }}"
 dbuser: "{{ app_name }}"
+dbhost: "127.0.0.1"
 dbpassword: "{{ lookup('password',  inventory_dir+'/lookups/'+app_name+'_db_password.txt chars=ascii,digits') }}"
 app_email: 'noreply@esgf-web1.ceda.ac.uk'
 

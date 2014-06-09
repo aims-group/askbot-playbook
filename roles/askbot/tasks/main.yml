@@ -26,9 +26,11 @@
 
 - name: create database
   include: "{{ inventory_dir }}/roles/postgres/tasks/createdb.yml"
+  when: "{{ createdb }} == True"
 
 - name: configure database backups
   include: "{{ inventory_dir }}/roles/postgres/tasks/backup.yml"
+  when: "{{ createdb }} == True"
 
 # For debugging without spamming people's email
 - name: create debug-email directory
