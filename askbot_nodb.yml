@@ -20,6 +20,7 @@
       app_vhost: askbot.esgf.org 
       app_email: noreply@esgf-web1.ceda.ac.uk
       dbuser: ""
+      dbname: ""
       dbhost: ""
       dbpassword: ""
     - role: askbot
@@ -27,6 +28,7 @@
       app_vhost: askbot.climate4impact.eu
       app_email: noreply@esgf-web1.ceda.ac.uk
       dbuser: ""
+      dbname: ""
       dbhost: ""
       dbpassword: ""
 

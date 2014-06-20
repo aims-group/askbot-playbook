@@ -3,6 +3,7 @@
 
 def init(settings):
     settings['DATABASES']['default']['HOST'] = '{{ dbhost }}'
+    settings['DATABASES']['default']['NAME'] = '{{ dbname }}'
     settings['DATABASES']['default']['PASSWORD'] = '{{ dbpassword }}'
     settings['DATABASES']['default']['USER'] = '{{ dbuser }}'
     settings['STATIC_URL'] = '/static/'
