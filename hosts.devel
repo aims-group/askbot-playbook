@@ -2,16 +2,15 @@
 
 [all:vars]
 # This is the STFC site proxy.  Other deployments probably want to make these variables empty.
-proxy_host = wwwcache.rl.ac.uk
+proxy_host = aims4.llnl.gov
 proxy_port = 8080
 
 [askbot]
 # List all hosts onto which you want to deploy here.
-localhost:2222
-#esgf-web1.ceda.ac.uk
+aims4.llnl.gov
 
 [askbot:vars]
 # This variable controls how the RPM system is set up on the host.  in the JASMIN environment
 # we need to configure yum differently depending on whether the hosts are managed or unmanaged.
 # You only need to set this if you include the "jasmin" role in your playbook.
-vm_type=jasmin_unmanaged
+vm_type=jasmin_managed

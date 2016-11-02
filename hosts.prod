@@ -2,12 +2,12 @@
 
 [all:vars]
 # This is the STFC site proxy.  Other deployments probably want to make these variables empty.
-proxy_host = wwwcache.rl.ac.uk
+proxy_host = aims4.llnl.gov
 proxy_port = 8080
 
 [askbot]
 # List all hosts onto which you want to deploy here.
-esgf-web1.ceda.ac.uk
+aims4.llnl.gov
 
 [askbot:vars]
 # This variable controls how the RPM system is set up on the host.  in the JASMIN environment

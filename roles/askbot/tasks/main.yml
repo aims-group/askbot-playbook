@@ -1,6 +1,6 @@
 ---
 - name: install virtualenv
-  yum: name=python-virtualenv
+  pip: name=virtualenv
   
 - name: install gcc, required for askbot dependencies
   yum: name=gcc

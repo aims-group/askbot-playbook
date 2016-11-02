@@ -2,7 +2,7 @@
 # Note: these tasks should be executed via sudo as user postgres
 
 - name: ensure user does not have unnecessary privilege
-  postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+  postgresql_user: name={{dbuser}}  role_attr_flags=NOSUPERUSER,NOCREATEDB
   sudo: yes
   sudo_user: postgres
 

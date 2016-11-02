@@ -14,3 +14,6 @@ This should do the following:
  4. Configure Postgres for Askbot
  5. Configure Apache to run askbot within the mod_wsgi container
 
+/var/www/askbot/bin/pip install python-modargs docutils setuptools-hg psycopg2 python-memcached lockfile billiard anyjson amqp importlib ordereddict
+/var/www/askbot/bin/pip install askbot
+

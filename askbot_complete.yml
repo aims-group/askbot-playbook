@@ -7,7 +7,7 @@
   user: root
   roles:
     # Include the jasmin role only if you are deploying on JASMIN.
-    - jasmin
+    # jasmin
 
     # These roles install services Askbot depends on.
     - postgres
@@ -17,14 +17,12 @@
     # List each Askbot instance here with their vhost.  Database passwords are automatically
     # saved to the ./lookups directory on the Ansible control host.
     #!WARNING: multiple instances don't work yet!
-    - { role: askbot, app_name: askbot_esgf, app_vhost: askbot.esgf.org, 
-          app_email: noreply@esgf-web1.ceda.ac.uk }
-    - { role: askbot, app_name: askbot_clim4i, app_vhost: askbot.climate4impact.eu,
-          app_email: noreply@esgf-web1.ceda.ac.uk }
+    - { role: askbot, app_name: askbot_uvcdat, app_vhost: askbot-uvcdat.llnl.gov,
+          app_email: nospam@llnl.gov }
   vars:
     # If debug_email is yes then Askbot will not send out email but will save emails to a
     # directory instead (/var/www/askbot/<app_name>_site/log/messages)
-    - debug_email: yes
+    - debug_email: no
     # Required if you are behing the STFC proxy.
     - http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
     - https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
